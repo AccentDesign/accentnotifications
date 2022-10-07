@@ -15,5 +15,7 @@ class TwilioNotification(BaseNotification):
 
 
 class TwilioBackend(BaseBackend):
-    async def send(self, options: TwilioNotification):
-        print(options)
+    options: TwilioNotification
+
+    async def send(self):
+        print(self.options)

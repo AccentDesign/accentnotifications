@@ -2,5 +2,5 @@
 set -x
 
 pip install flit
-flit install --extra dev,test
+flit install --extra smtp,dev,test
 pip install -e .

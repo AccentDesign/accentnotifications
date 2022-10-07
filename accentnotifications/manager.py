@@ -3,4 +3,5 @@ from accentnotifications.notifications.base import BaseNotification
 
 class NotificationManager:
     async def send(self, options: BaseNotification):
-        await options.backend().send(options)
+        async with options.backend(options) as backend:
+            await backend.send()

@@ -36,6 +36,9 @@ dev = [
     "autoflake",
     "flake8",
 ]
+smtp = [
+    "aiosmtplib"
+]
 
 [tool.isort]
 profile = "black"
