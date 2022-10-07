@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+# mypy accentnotifications
+flake8 accentnotifications tests
+black accentnotifications tests --check
+isort accentnotifications tests --check-only
