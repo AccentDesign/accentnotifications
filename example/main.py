@@ -36,5 +36,3 @@ email.attach(MIMEText("How you doin?", "plain", _charset="utf-8"))
 email.attach(MIMEText("<p>How you doin?</p>", "html", _charset="utf-8"))
 notification = SmtpNotification(email=email)
 loop.run_until_complete(NotificationManager().send(notification))
-
-print(notification.dict())
