@@ -26,7 +26,9 @@ Homepage = "https://github.com/accentdesign/accentnotifications"
 [project.optional-dependencies]
 test = [
     "pytest",
+    "pytest-asyncio",
     "pytest-cov",
+    "pytest-mock",
     "mypy",
     "flake8",
     "black",

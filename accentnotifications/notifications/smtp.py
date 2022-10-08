@@ -3,9 +3,9 @@ from email.mime.text import MIMEText
 from typing import Optional, Type
 
 try:
-    import aiosmtplib
-except ImportError:
-    aiosmtplib = None
+    from aiosmtplib import SMTP
+except ImportError:  # pragma: no cover
+    SMTP = None
 
 from pydantic import EmailStr, SecretStr
 
@@ -42,7 +42,7 @@ class SmtpBackend(BaseBackend):
     def __init__(self, options: BaseNotification) -> None:
         super().__init__(options)
 
-        if not aiosmtplib:
+        if not SMTP:  # pragma: no cover
             raise ModuleNotFoundError("python library aiosmtplib required")
 
     async def open(self):
@@ -55,7 +55,7 @@ class SmtpBackend(BaseBackend):
             params["timeout"] = self.options.timeout
 
         try:
-            self.connection = aiosmtplib.SMTP(**params)
+            self.connection = SMTP(**params)
 
             await self.connection.connect()
 
@@ -74,7 +74,7 @@ class SmtpBackend(BaseBackend):
                 raise
 
     async def close(self):
-        if self.connection is None:
+        if self.connection is None:  # pragma: no cover
             return
 
         try:
