@@ -1,10 +1,20 @@
 import os
+from email.message import EmailMessage
 
 import pytest
 from pydantic import ValidationError
 
 from accentnotifications.notifications import SmtpBackend, SmtpNotification
 from accentnotifications.notifications.base import BaseNotification
+
+
+def get_email():
+    email = EmailMessage()
+    email["Subject"] = "Subject"
+    email["From"] = "me@email.com"
+    email["To"] = "you@email.com"
+    email.set_content("Hello")
+    return email
 
 
 def test_is_correct_subclass():
@@ -21,11 +31,7 @@ def test_valid():
         starttls=False,
         timeout=0,
         fail_silently=True,
-        from_address="me@email.com",
-        to_address="you@email.com",
-        subject="hello",
-        content_text="how are you",
-        content_html="<p>how are you</p>",
+        email=get_email(),
     )
 
     assert model.host == "host"
@@ -36,11 +42,7 @@ def test_valid():
     assert model.starttls is False
     assert model.timeout == 0
     assert model.fail_silently is True
-    assert model.from_address == "me@email.com"
-    assert model.to_address == "you@email.com"
-    assert model.subject == "hello"
-    assert model.content_text == "how are you"
-    assert model.content_html == "<p>how are you</p>"
+    assert isinstance(model.email, EmailMessage)
 
 
 def test_required_values():
@@ -59,27 +61,7 @@ def test_required_values():
             "type": "value_error.missing",
         },
         {
-            "loc": ("from_address",),
-            "msg": "field required",
-            "type": "value_error.missing",
-        },
-        {
-            "loc": ("to_address",),
-            "msg": "field required",
-            "type": "value_error.missing",
-        },
-        {
-            "loc": ("subject",),
-            "msg": "field required",
-            "type": "value_error.missing",
-        },
-        {
-            "loc": ("content_text",),
-            "msg": "field required",
-            "type": "value_error.missing",
-        },
-        {
-            "loc": ("content_html",),
+            "loc": ("email",),
             "msg": "field required",
             "type": "value_error.missing",
         },
@@ -92,11 +74,7 @@ def test_defaults():
     model = SmtpNotification(
         host="host",
         port=1234,
-        from_address="me@email.com",
-        to_address="you@email.com",
-        subject="hello",
-        content_text="how are you",
-        content_html="<p>how are you</p>",
+        email=get_email(),
     )
 
     assert model.username is None
@@ -110,27 +88,18 @@ def test_defaults():
 def test_values_from_environment():
     os.environ["NOTIFICATIONS_SMTP_HOST"] = "host"
     os.environ["NOTIFICATIONS_SMTP_PORT"] = "1234"
-    os.environ["NOTIFICATIONS_SMTP_FROM_ADDRESS"] = "me@email.com"
     model = SmtpNotification(
-        to_address="you@email.com",
-        subject="hello",
-        content_text="how are you",
-        content_html="<p>how are you</p>",
+        email=get_email(),
     )
 
     assert model.host == "host"
     assert model.port == 1234
-    assert model.from_address == "me@email.com"
 
 
 def test_has_correct_backend():
     model = SmtpNotification(
         host="host",
         port=1234,
-        from_address="me@email.com",
-        to_address="you@email.com",
-        subject="hello",
-        content_text="how are you",
-        content_html="<p>how are you</p>",
+        email=get_email(),
     )
     assert model.backend == SmtpBackend

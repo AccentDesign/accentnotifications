@@ -1,16 +1,24 @@
+from email.message import EmailMessage
+
 import pytest
 
 from accentnotifications.notifications import SmtpBackend, SmtpNotification
 from accentnotifications.notifications.base import BaseBackend
 
+
+def get_email():
+    email = EmailMessage()
+    email["Subject"] = "Subject"
+    email["From"] = "me@email.com"
+    email["To"] = "you@email.com"
+    email.set_content("Hello")
+    return email
+
+
 TEST_EMAIL = {
     "host": "host",
     "port": 1234,
-    "from_address": "me@email.com",
-    "to_address": "you@email.com",
-    "subject": "hello",
-    "content_text": "how are you",
-    "content_html": "<p>how are you</p>",
+    "email": get_email(),
 }
 
 

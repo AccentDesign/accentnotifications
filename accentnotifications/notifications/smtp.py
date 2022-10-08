@@ -1,13 +1,13 @@
+from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from typing import Optional, Type
+from typing import Optional, Type, Union
 
 try:
     from aiosmtplib import SMTP
 except ImportError:  # pragma: no cover
     SMTP = None
 
-from pydantic import EmailStr, SecretStr
+from pydantic import SecretStr
 
 from .base import BaseBackend, BaseNotification
 
@@ -21,11 +21,7 @@ class SmtpNotification(BaseNotification):
     starttls: bool = False
     timeout: Optional[int] = None
     fail_silently: bool = False
-    from_address: EmailStr
-    to_address: EmailStr
-    subject: str
-    content_text: str
-    content_html: str
+    email: Union[EmailMessage, MIMEMultipart]
 
     class Config:
         env_prefix = "notifications_smtp_"
@@ -87,17 +83,8 @@ class SmtpBackend(BaseBackend):
             self.connection = None
 
     async def send(self):
-        msg = MIMEMultipart("alternative")
-        msg["From"] = self.options.from_address
-        msg["To"] = self.options.to_address
-        msg["Subject"] = self.options.subject
-        if self.options.content_text:
-            msg.attach(MIMEText(self.options.content_text, "plain", _charset="utf-8"))
-        if self.options.content_html:
-            msg.attach(MIMEText(self.options.content_html, "html", _charset="utf-8"))
-
         try:
-            await self.connection.send_message(msg)
+            await self.connection.send_message(self.options.email)
         except Exception:
             if self.options.fail_silently:
                 return False

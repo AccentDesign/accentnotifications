@@ -16,7 +16,7 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
-    "pydantic[email]",
+    "pydantic",
 ]
 dynamic = ["version", "description"]
 

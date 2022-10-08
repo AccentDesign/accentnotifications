@@ -1,5 +1,8 @@
 import asyncio
 import os
+from email.message import EmailMessage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from accentnotifications.manager import NotificationManager
 from accentnotifications.notifications import SmtpNotification, TwilioNotification
@@ -14,16 +17,27 @@ asyncio.set_event_loop(loop)
 # setting config defaults
 os.environ["NOTIFICATIONS_SMTP_HOST"] = "localhost"
 os.environ["NOTIFICATIONS_SMTP_PORT"] = "1025"
-os.environ["NOTIFICATIONS_SMTP_FROM_ADDRESS"] = "me@example.com"
 
-# send an email
-notification = SmtpNotification(
-    to_address="you@example.com",
-    subject="Hi",
-    content_text="Hi!\nHow u doin?",
-    content_html="<h1>Hi!</h1><p>How u doin?</p>",
-)
+# send an EmailMessage
+email = EmailMessage()
+email['Subject'] = 'Hi'
+email['From'] = "me@email.com"
+email['To'] = "you@email.com"
+email.set_content("How you doin?")
+notification = SmtpNotification(email=email)
 loop.run_until_complete(NotificationManager().send(notification))
+
+# send an MIMEMultipart
+email = MIMEMultipart("alternative")
+email['Subject'] = 'Hi'
+email['From'] = "me@email.com"
+email['To'] = "you@email.com"
+email.attach(MIMEText("How you doin?", "plain", _charset="utf-8"))
+email.attach(MIMEText("<p>How you doin?</p>", "html", _charset="utf-8"))
+notification = SmtpNotification(email=email)
+loop.run_until_complete(NotificationManager().send(notification))
+
+print(notification.dict())
 
 # send an sms
 notification = TwilioNotification(
