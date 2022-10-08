@@ -5,14 +5,14 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from accentnotifications.manager import NotificationManager
-from accentnotifications.notifications import SmtpNotification, TwilioNotification
+from accentnotifications.notifications import SmtpNotification
+
+# start a mailhog docker container
+# docker run -p 8025:8025 -p 1025:1025 mailhog/mailhog
 
 # create the loop
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
-
-# start a mailhog docker container
-# docker run -p 8025:8025 -p 1025:1025 mailhog/mailhog
 
 # setting config defaults
 os.environ["NOTIFICATIONS_SMTP_HOST"] = "localhost"
@@ -38,9 +38,3 @@ notification = SmtpNotification(email=email)
 loop.run_until_complete(NotificationManager().send(notification))
 
 print(notification.dict())
-
-# send an sms
-notification = TwilioNotification(
-    number="07917759123",
-)
-loop.run_until_complete(NotificationManager().send(notification))
