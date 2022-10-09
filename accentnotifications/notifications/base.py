@@ -32,5 +32,5 @@ class BaseBackend:
     async def close(self):
         pass
 
-    async def send(self):
+    async def send(self) -> bool:
         raise NotImplementedError()

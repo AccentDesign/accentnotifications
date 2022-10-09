@@ -82,7 +82,7 @@ class SmtpBackend(BaseBackend):
         finally:
             self.connection = None
 
-    async def send(self):
+    async def send(self) -> bool:
         try:
             await self.connection.send_message(self.options.email)
         except Exception:
