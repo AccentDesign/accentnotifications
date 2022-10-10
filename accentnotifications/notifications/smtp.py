@@ -1,6 +1,7 @@
-from email.message import EmailMessage
-from email.mime.multipart import MIMEMultipart
-from typing import Optional, Type, Union
+from email.message import Message
+from typing import Optional, Type
+
+from ..types import Email
 
 try:
     from aiosmtplib import SMTP
@@ -21,10 +22,11 @@ class SmtpNotification(BaseNotification):
     starttls: bool = False
     timeout: Optional[int] = None
     fail_silently: bool = False
-    email: Union[EmailMessage, MIMEMultipart]
+    email: Email
 
     class Config:
         env_prefix = "notifications_smtp_"
+        json_encoders = {Message: lambda v: v.as_string()}
 
     @property
     def backend(self) -> Type["SmtpBackend"]:

@@ -1,3 +1,4 @@
+import json
 import os
 from email.message import EmailMessage
 
@@ -103,3 +104,31 @@ def test_has_correct_backend():
         email=get_email(),
     )
     assert model.backend == SmtpBackend
+
+
+def test_json():
+    model = SmtpNotification(
+        host="host",
+        port=1234,
+        username="username",
+        password="pass",
+        use_tls=True,
+        starttls=False,
+        timeout=0,
+        fail_silently=True,
+        email=get_email(),
+    )
+    j = model.json()
+    assert j == json.dumps(
+        {
+            "host": "host",
+            "port": 1234,
+            "username": "**********",
+            "password": "**********",
+            "use_tls": True,
+            "starttls": False,
+            "timeout": 0,
+            "fail_silently": True,
+            "email": get_email().as_string(),
+        }
+    )
