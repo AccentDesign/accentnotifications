@@ -42,6 +42,16 @@ smtp = [
     "aiosmtplib"
 ]
 
+[tool.flit.sdist]
+include = [
+    "accentnotifications/"
+]
+exclude = [
+    "example/",
+    "scripts/",
+    "tests/",
+]
+
 [tool.isort]
 profile = "black"
 known_third_party = []
