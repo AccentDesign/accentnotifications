@@ -20,18 +20,18 @@ os.environ["NOTIFICATIONS_SMTP_PORT"] = "1025"
 
 # send an EmailMessage
 email = EmailMessage()
-email['Subject'] = 'Hi'
-email['From'] = "me@email.com"
-email['To'] = "you@email.com"
+email["Subject"] = "Hi"
+email["From"] = "me@email.com"
+email["To"] = "you@email.com"
 email.set_content("How you doin?")
 notification = SmtpNotification(email=email)
 loop.run_until_complete(NotificationManager().send(notification))
 
 # send an MIMEMultipart
 email = MIMEMultipart("alternative")
-email['Subject'] = 'Hi'
-email['From'] = "me@email.com"
-email['To'] = "you@email.com"
+email["Subject"] = "Hi"
+email["From"] = "me@email.com"
+email["To"] = "you@email.com"
 email.attach(MIMEText("How you doin?", "plain", _charset="utf-8"))
 email.attach(MIMEText("<p>How you doin?</p>", "html", _charset="utf-8"))
 notification = SmtpNotification(email=email)
