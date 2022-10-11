@@ -136,6 +136,8 @@ async def test_send(mocker):
     async with SmtpBackend(notification) as backend:
         assert await backend.send() is True
         spy.assert_called_once()
+    # check the response
+    assert notification.response.success is True
 
 
 @pytest.mark.asyncio
@@ -146,6 +148,8 @@ async def test_send_fail_silently_true(mocker):
     notification = SmtpNotification(fail_silently=True, **TEST_EMAIL)
     async with SmtpBackend(notification) as backend:
         assert await backend.send() is False
+    # check the response
+    assert notification.response.success is False
 
 
 @pytest.mark.asyncio
@@ -157,3 +161,5 @@ async def test_send_fail_silently_false(mocker):
     async with SmtpBackend(notification) as backend:
         with pytest.raises(OSError):
             assert await backend.send() is False
+    # check the response
+    assert notification.response.success is False

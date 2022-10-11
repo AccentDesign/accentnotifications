@@ -1,8 +1,6 @@
 from email.message import Message
 from typing import Optional, Type
 
-from ..types import Email
-
 try:
     from aiosmtplib import SMTP
 except ImportError:  # pragma: no cover
@@ -10,7 +8,13 @@ except ImportError:  # pragma: no cover
 
 from pydantic import SecretStr
 
-from .base import BaseBackend, BaseNotification
+from accentnotifications.types import Email
+
+from .base import BaseBackend, BaseNotification, BaseResponse
+
+
+class SmtpResponse(BaseResponse):
+    success: bool
 
 
 class SmtpNotification(BaseNotification):
@@ -23,6 +27,7 @@ class SmtpNotification(BaseNotification):
     timeout: Optional[int] = None
     fail_silently: bool = False
     email: Email
+    response: SmtpResponse = None
 
     class Config:
         env_prefix = "notifications_smtp_"
@@ -88,8 +93,10 @@ class SmtpBackend(BaseBackend):
         try:
             await self.connection.send_message(self.options.email)
         except Exception:
+            self.options.response = SmtpResponse(success=False)
             if self.options.fail_silently:
                 return False
             raise
 
+        self.options.response = SmtpResponse(success=True)
         return True

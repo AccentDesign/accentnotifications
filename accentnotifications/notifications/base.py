@@ -1,9 +1,15 @@
 from typing import Type
 
-from pydantic import BaseSettings
+from pydantic import BaseModel, BaseSettings
+
+
+class BaseResponse(BaseModel):
+    success: bool
 
 
 class BaseNotification(BaseSettings):
+    response: BaseResponse = None
+
     @property
     def backend(self) -> Type["BaseBackend"]:
         raise NotImplementedError()

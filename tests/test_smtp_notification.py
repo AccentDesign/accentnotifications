@@ -121,6 +121,7 @@ def test_json():
     j = model.json()
     assert j == json.dumps(
         {
+            "response": None,
             "host": "host",
             "port": 1234,
             "username": "**********",
