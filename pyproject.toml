@@ -42,6 +42,10 @@ smtp = [
     "aiosmtplib"
 ]
 
+twiliosms = [
+    "aiohttp"
+]
+
 [tool.flit.sdist]
 include = [
     "accentnotifications/"
