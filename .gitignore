@@ -8,3 +8,5 @@ dist
 .coverage
 coverage.xml
 *.egg-info
+.venv
+venv
