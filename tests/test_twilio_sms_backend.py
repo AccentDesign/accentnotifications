@@ -9,14 +9,19 @@ TEST_TWILIO_SMS = {
     "to_number": "To Number in E.164 Format",
     "from_number": "From Number in E.164 format OR alphanumeric if enabled in account",
     "body": "Body Text",
+    "base_url": "Base url",
 }
 
 
 class MockSMSResponse:
     status = None
+    headers = {"Twilio-Request-Id": "request_id"}
 
     def __init__(self, status):
         self.status = status
+
+    async def json(self):
+        return {"message": "message"}
 
 
 class MockSMS:
@@ -55,6 +60,9 @@ async def test_send(mocker):
         assert await backend.send() is True
     # check the response
     assert notification.response.success is True
+    assert notification.response.status_code == 201
+    assert notification.response.request_id is not None
+    assert notification.response.message is not None
 
 
 @pytest.mark.asyncio
@@ -68,6 +76,9 @@ async def test_send_fail_silently_true(mocker):
         assert await backend.send() is False
     # check the response
     assert notification.response.success is False
+    assert notification.response.status_code != 201
+    assert notification.response.request_id is not None
+    assert notification.response.message is not None
 
 
 @pytest.mark.asyncio
@@ -82,3 +93,6 @@ async def test_send_fail_silently_false(mocker):
             assert await backend.send() is False
     # check the response
     assert notification.response.success is False
+    assert notification.response.status_code != 201
+    assert notification.response.request_id is None
+    assert notification.response.message is None

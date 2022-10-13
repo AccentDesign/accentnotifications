@@ -6,20 +6,25 @@ except ImportError:  # pragma: no cover
 
 from typing import Type
 
+from pydantic import SecretStr
+
 from .base import BaseBackend, BaseNotification, BaseResponse
 
 
 class TwilioSMSResponse(BaseResponse):
     success: bool
     status_code: int = None
+    request_id: str = None
+    message: str = None
 
 
 class TwilioSMSNotification(BaseNotification):
     from_number: str
     to_number: str
     body: str
-    account_sid: str
-    auth_token: str
+    base_url: str
+    account_sid: SecretStr
+    auth_token: SecretStr
     fail_silently: bool = False
     response: TwilioSMSResponse = None
 
@@ -38,31 +43,41 @@ class TwilioSMSBackend(BaseBackend):
     def __init__(self, options: TwilioSMSNotification) -> None:
         super().__init__(options)
 
+        if not ClientSession:  # pragma: no cover
+            raise ModuleNotFoundError("python library aiohttp required")
+
     async def send(self) -> bool:
         auth = BasicAuth(
-            login=self.options.account_sid, password=self.options.auth_token
+            login=self.options.account_sid.get_secret_value(),
+            password=self.options.auth_token.get_secret_value(),
         )
         async with ClientSession(auth=auth) as connection:
-            self.connection = connection
             try:
                 data = {
                     "From": self.options.from_number,
                     "To": self.options.to_number,
                     "Body": self.options.body,
                 }
-                post_data = await self.connection.post(
-                    f"https://api.twilio.com/2010-04-01/Accounts/{self.options.account_sid}/Messages.json",
+                post_data = await connection.post(
+                    f"{self.options.base_url}/2010-04-01/Accounts/{self.options.account_sid}/Messages.json",
                     data=data,
                 )
+                body = await post_data.json()
                 # Twilio uses 201 for success
                 if post_data.status != 201:
                     self.options.response = TwilioSMSResponse(
-                        status_code=post_data.status, success=False
+                        status_code=post_data.status,
+                        success=False,
+                        request_id=post_data.headers["Twilio-Request-Id"],
+                        message=body["message"],
                     )
                     return False
                 else:
                     self.options.response = TwilioSMSResponse(
-                        status_code=post_data.status, success=True
+                        status_code=post_data.status,
+                        success=True,
+                        request_id=post_data.headers["Twilio-Request-Id"],
+                        message=body["message"],
                     )
                     return True
             except Exception:

@@ -16,6 +16,7 @@ def test_valid():
         from_number="from",
         to_number="to",
         body="body",
+        base_url="http://url.com",
         account_sid="account_sid",
         auth_token="auth_token",
         fail_silently=False,
@@ -24,8 +25,9 @@ def test_valid():
     assert model.from_number == "from"
     assert model.to_number == "to"
     assert model.body == "body"
-    assert model.account_sid == "account_sid"
-    assert model.auth_token == "auth_token"
+    assert model.base_url == "http://url.com"
+    assert model.account_sid.get_secret_value() == "account_sid"
+    assert model.auth_token.get_secret_value() == "auth_token"
     assert model.fail_silently is False
 
 
@@ -50,6 +52,11 @@ def test_required_values():
             "type": "value_error.missing",
         },
         {
+            "loc": ("base_url",),
+            "msg": "field required",
+            "type": "value_error.missing",
+        },
+        {
             "loc": ("account_sid",),
             "msg": "field required",
             "type": "value_error.missing",
@@ -69,6 +76,7 @@ def test_defaults():
         from_number="from",
         to_number="to",
         body="body",
+        base_url="http://url.com",
         account_sid="account_sid",
         auth_token="auth_token",
     )
@@ -84,10 +92,11 @@ def test_values_from_environment():
         from_number="from",
         to_number="to",
         body="body",
+        base_url="http://url.com",
     )
 
-    assert model.account_sid == "account_sid_1234"
-    assert model.auth_token == "auth_token_abcd"
+    assert model.account_sid.get_secret_value() == "account_sid_1234"
+    assert model.auth_token.get_secret_value() == "auth_token_abcd"
 
 
 def test_has_correct_backend():
@@ -95,6 +104,7 @@ def test_has_correct_backend():
         from_number="from",
         to_number="to",
         body="body",
+        base_url="http://url.com",
         account_sid="account_sid",
         auth_token="auth_token",
     )
