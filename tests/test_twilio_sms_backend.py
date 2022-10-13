@@ -6,8 +6,8 @@ from accentnotifications.notifications.base import BaseBackend
 TEST_TWILIO_SMS = {
     "account_sid": "account_sid",
     "auth_token": "auth_token",
-    "to_number": "To Number in E.164 Format",
-    "from_number": "From Number in E.164 format OR alphanumeric if enabled in account",
+    "to_number": "+447777777777",
+    "from_number": "+441111111111",
     "body": "Body Text",
     "base_url": "Base url",
 }

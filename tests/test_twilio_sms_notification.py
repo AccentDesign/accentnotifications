@@ -14,7 +14,7 @@ def test_is_correct_subclass():
 def test_valid():
     model = TwilioSMSNotification(
         from_number="from",
-        to_number="to",
+        to_number="+447777777777",
         body="body",
         base_url="http://url.com",
         account_sid="account_sid",
@@ -23,7 +23,7 @@ def test_valid():
     )
 
     assert model.from_number == "from"
-    assert model.to_number == "to"
+    assert model.to_number == "+447777777777"
     assert model.body == "body"
     assert model.base_url == "http://url.com"
     assert model.account_sid.get_secret_value() == "account_sid"
@@ -74,7 +74,7 @@ def test_required_values():
 def test_defaults():
     model = TwilioSMSNotification(
         from_number="from",
-        to_number="to",
+        to_number="+447777777777",
         body="body",
         base_url="http://url.com",
         account_sid="account_sid",
@@ -90,7 +90,7 @@ def test_values_from_environment():
     os.environ["NOTIFICATIONS_TWILIO_SMS_AUTH_TOKEN"] = "auth_token_abcd"
     model = TwilioSMSNotification(
         from_number="from",
-        to_number="to",
+        to_number="+447777777777",
         body="body",
         base_url="http://url.com",
     )
@@ -102,10 +102,33 @@ def test_values_from_environment():
 def test_has_correct_backend():
     model = TwilioSMSNotification(
         from_number="from",
-        to_number="to",
+        to_number="+447777777777",
         body="body",
         base_url="http://url.com",
         account_sid="account_sid",
         auth_token="auth_token",
     )
     assert model.backend == TwilioSMSBackend
+
+
+def test_invalid():
+    with pytest.raises(ValidationError) as exc_info:
+        TwilioSMSNotification(
+            from_number="from",
+            to_number="07507788372",
+            body="body",
+            base_url="http://url.com",
+            account_sid="account_sid",
+            auth_token="auth_token",
+        )
+
+    expected = [
+        {
+            "loc": ("to_number",),
+            "msg": 'string does not match regex "^\\+?[1-9]\\d{1,14}$"',
+            "type": "value_error.str.regex",
+            "ctx": {"pattern": "^\\+?[1-9]\\d{1,14}$"},
+        },
+    ]
+
+    assert exc_info.value.errors() == expected

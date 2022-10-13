@@ -6,9 +6,11 @@ except ImportError:  # pragma: no cover
 
 from typing import Type
 
-from pydantic import SecretStr
+from pydantic import SecretStr, constr
 
 from .base import BaseBackend, BaseNotification, BaseResponse
+
+KeyTypeStr = constr(regex=r"^\+?[1-9]\d{1,14}$")
 
 
 class TwilioSMSResponse(BaseResponse):
@@ -20,7 +22,7 @@ class TwilioSMSResponse(BaseResponse):
 
 class TwilioSMSNotification(BaseNotification):
     from_number: str
-    to_number: str
+    to_number: KeyTypeStr
     body: str
     base_url: str
     account_sid: SecretStr
