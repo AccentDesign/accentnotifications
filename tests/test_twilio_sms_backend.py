@@ -51,13 +51,15 @@ def test_is_correct_subclass():
 
 @pytest.mark.asyncio
 async def test_send(mocker):
-    mocker.patch(
+    mock = mocker.patch(
         "accentnotifications.notifications.twilio_sms.ClientSession",
         return_value=MockSMS(),
     )
     notification = TwilioSMSNotification(**TEST_TWILIO_SMS)
+    spy = mocker.spy(mock.return_value, "post")
     async with TwilioSMSBackend(notification) as backend:
         assert await backend.send() is True
+        spy.assert_called_once()
     # check the response
     assert notification.response.success is True
     assert notification.response.status_code == 201
