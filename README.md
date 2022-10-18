@@ -13,5 +13,5 @@ pip install accentnotifications[smtp]
 
 For twilio sms:
 ```bash
-pip install accentnotifications[twilio_sms]
+pip install accentnotifications[twiliosms]
 ```
