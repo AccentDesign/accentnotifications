@@ -38,37 +38,43 @@ def test_required_values():
     expected = [
         {
             "loc": ("from_number",),
-            "msg": "field required",
-            "type": "value_error.missing",
+            "msg": "Field required",
+            "type": "missing",
         },
         {
             "loc": ("to_number",),
-            "msg": "field required",
-            "type": "value_error.missing",
+            "msg": "Field required",
+            "type": "missing",
         },
         {
             "loc": ("body",),
-            "msg": "field required",
-            "type": "value_error.missing",
+            "msg": "Field required",
+            "type": "missing",
         },
         {
             "loc": ("base_url",),
-            "msg": "field required",
-            "type": "value_error.missing",
+            "msg": "Field required",
+            "type": "missing",
         },
         {
             "loc": ("account_sid",),
-            "msg": "field required",
-            "type": "value_error.missing",
+            "msg": "Field required",
+            "type": "missing",
         },
         {
             "loc": ("auth_token",),
-            "msg": "field required",
-            "type": "value_error.missing",
+            "msg": "Field required",
+            "type": "missing",
         },
     ]
 
-    assert exc_info.value.errors() == expected
+    errors = list(
+        map(
+            lambda e: {"loc": e["loc"], "msg": e["msg"], "type": e["type"]},
+            exc_info.value.errors(),
+        )
+    )
+    assert errors == expected
 
 
 def test_defaults():
@@ -122,13 +128,8 @@ def test_invalid():
             auth_token="auth_token",
         )
 
-    expected = [
-        {
-            "loc": ("to_number",),
-            "msg": 'string does not match regex "^\\+?[1-9]\\d{1,14}$"',
-            "type": "value_error.str.regex",
-            "ctx": {"pattern": "^\\+?[1-9]\\d{1,14}$"},
-        },
-    ]
-
-    assert exc_info.value.errors() == expected
+    error = exc_info.value.errors()[0]
+    assert error["loc"] == ("to_number",)
+    assert error["msg"] == "String should match pattern '^\\+?[1-9]\\d{1,14}$'"
+    assert error["type"] == "string_pattern_mismatch"
+    assert error["ctx"] == {"pattern": "^\\+?[1-9]\\d{1,14}$"}

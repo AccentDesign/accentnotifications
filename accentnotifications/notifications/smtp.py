@@ -1,5 +1,6 @@
-from email.message import Message
 from typing import Optional, Type
+
+from pydantic_settings import SettingsConfigDict
 
 try:
     from aiosmtplib import SMTP
@@ -18,6 +19,12 @@ class SmtpResponse(BaseResponse):
 
 
 class SmtpNotification(BaseNotification):
+    model_config = SettingsConfigDict(
+        arbitrary_types_allowed=True,
+        env_prefix="notifications_smtp_",
+        # json_encoders={Message: lambda v: v.as_string()}
+    )
+
     host: str
     port: int
     username: Optional[SecretStr] = None
@@ -27,11 +34,7 @@ class SmtpNotification(BaseNotification):
     timeout: Optional[int] = None
     fail_silently: bool = False
     email: Email
-    response: SmtpResponse = None
-
-    class Config:
-        env_prefix = "notifications_smtp_"
-        json_encoders = {Message: lambda v: v.as_string()}
+    response: Optional[SmtpResponse] = None
 
     @property
     def backend(self) -> Type["SmtpBackend"]:

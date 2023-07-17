@@ -1,6 +1,7 @@
-from typing import Type
+from typing import Optional, Type
 
-from pydantic import BaseModel, BaseSettings
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings
 
 
 class BaseResponse(BaseModel):
@@ -8,7 +9,7 @@ class BaseResponse(BaseModel):
 
 
 class BaseNotification(BaseSettings):
-    response: BaseResponse = None
+    response: Optional[BaseResponse] = None
 
     @property
     def backend(self) -> Type["BaseBackend"]:

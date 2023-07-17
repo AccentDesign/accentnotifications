@@ -53,22 +53,28 @@ def test_required_values():
     expected = [
         {
             "loc": ("host",),
-            "msg": "field required",
-            "type": "value_error.missing",
+            "msg": "Field required",
+            "type": "missing",
         },
         {
             "loc": ("port",),
-            "msg": "field required",
-            "type": "value_error.missing",
+            "msg": "Field required",
+            "type": "missing",
         },
         {
             "loc": ("email",),
-            "msg": "field required",
-            "type": "value_error.missing",
+            "msg": "Field required",
+            "type": "missing",
         },
     ]
 
-    assert exc_info.value.errors() == expected
+    errors = list(
+        map(
+            lambda e: {"loc": e["loc"], "msg": e["msg"], "type": e["type"]},
+            exc_info.value.errors(),
+        )
+    )
+    assert errors == expected
 
 
 def test_defaults():
@@ -118,7 +124,7 @@ def test_json():
         fail_silently=True,
         email=get_email(),
     )
-    j = model.json()
+    j = model.model_dump_json()
     assert j == json.dumps(
         {
             "response": None,
@@ -131,5 +137,6 @@ def test_json():
             "timeout": 0,
             "fail_silently": True,
             "email": get_email().as_string(),
-        }
+        },
+        separators=(",", ":"),
     )

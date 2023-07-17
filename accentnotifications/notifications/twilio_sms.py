@@ -1,16 +1,18 @@
+from pydantic_settings import SettingsConfigDict
+
 try:
     from aiohttp import BasicAuth, ClientSession
 except ImportError:  # pragma: no cover
     BasicAuth = None
     ClientSession = None
 
-from typing import Type
+from typing import Optional, Type
 
 from pydantic import SecretStr, constr
 
 from .base import BaseBackend, BaseNotification, BaseResponse
 
-KeyTypeStr = constr(regex=r"^\+?[1-9]\d{1,14}$")
+KeyTypeStr = constr(pattern=r"^\+?[1-9]\d{1,14}$")
 
 
 class TwilioSMSResponse(BaseResponse):
@@ -21,6 +23,11 @@ class TwilioSMSResponse(BaseResponse):
 
 
 class TwilioSMSNotification(BaseNotification):
+    model_config = SettingsConfigDict(
+        arbitrary_types_allowed=True,
+        env_prefix="notifications_twilio_sms_",
+    )
+
     from_number: str
     to_number: KeyTypeStr
     body: str
@@ -28,10 +35,7 @@ class TwilioSMSNotification(BaseNotification):
     account_sid: SecretStr
     auth_token: SecretStr
     fail_silently: bool = False
-    response: TwilioSMSResponse = None
-
-    class Config:
-        env_prefix = "notifications_twilio_sms_"
+    response: Optional[TwilioSMSResponse] = None
 
     @property
     def backend(self) -> Type["TwilioSMSBackend"]:
