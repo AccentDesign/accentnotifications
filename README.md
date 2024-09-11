@@ -1,17 +1,51 @@
 [![Test](https://github.com/accentdesign/accentnotifications/actions/workflows/test.yml/badge.svg)](https://github.com/accentdesign/accentnotifications/actions/workflows/test.yml)
 
----
-**Source Code**: <a href="https://github.com/accentdesign/accentnotifications" target="_blank">https://github.com/accentdesign/accentnotifications</a>
----
+## Commands
 
-## Installation
+### Install dependencies
 
-For smtp:
 ```bash
-pip install accentnotifications[smtp]
+uv sync --all-extras
 ```
 
-For twilio sms:
+### Run tests
+
 ```bash
-pip install accentnotifications[twiliosms]
+uv run pytest tests
+```
+
+### Run linters
+
+black:
+```bash
+uv run black accentnotifications example tests
+```
+
+ruff:
+```bash
+uv run ruff check --fix accentnotifications example tests
+```
+
+### Build package
+
+install dependencies:
+```bash
+uv tool install hatch
+```
+
+build package:
+```bash
+uv build
+```
+
+### Publish package
+
+install dependencies:
+```bash
+uv tool install twine
+```
+
+publish package:
+```bash
+uvx twine upload dist/*
 ```
