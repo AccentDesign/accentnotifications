@@ -16,12 +16,10 @@ uv run pytest tests
 
 ### Run linters
 
-black:
-```bash
-uv run black accentnotifications example tests
-```
-
 ruff:
+```bash
+uv run ruff format accentnotifications example tests
+```
 ```bash
 uv run ruff check --fix accentnotifications example tests
 ```
