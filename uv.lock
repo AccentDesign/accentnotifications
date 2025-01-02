@@ -3,7 +3,7 @@ requires-python = ">=3.9"
 
 [[package]]
 name = "accentnotifications"
-version = "0.0.14"
+version = "0.0.15"
 source = { editable = "." }
 dependencies = [
     { name = "pydantic" },
@@ -29,7 +29,7 @@ requires-dist = [
     { name = "aiohttp", marker = "extra == 'twiliosms'" },
     { name = "aiosmtplib", marker = "extra == 'smtp'" },
     { name = "pydantic", specifier = ">=2.0.1,<2.11.0" },
-    { name = "pydantic-settings", specifier = ">=2.0.1,<2.7.0" },
+    { name = "pydantic-settings", specifier = ">=2.0.1,<2.8.0" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "pytest-asyncio", marker = "extra == 'test'" },
     { name = "pytest-mock", marker = "extra == 'test'" },
